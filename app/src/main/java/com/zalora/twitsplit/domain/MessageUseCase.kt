@@ -1,6 +1,5 @@
-package com.zalora.twitsplit.main.domain
+package com.zalora.twitsplit.domain
 
-import com.zalora.twitsplit.base.usecase.UseCase
 import com.zalora.twitsplit.data.DataException
 import com.zalora.twitsplit.data.model.Part
 import io.reactivex.Observable

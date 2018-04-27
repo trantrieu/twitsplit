@@ -4,8 +4,8 @@ import android.content.Context
 import com.zalora.twitsplit.DaggerTwitSplitComponent
 import com.zalora.twitsplit.TwitSplitAppModule
 import com.zalora.twitsplit.di.DaggerMainComponentTest
-import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
-import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
+import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
+import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
 import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
 import org.junit.Before
 import org.junit.ClassRule

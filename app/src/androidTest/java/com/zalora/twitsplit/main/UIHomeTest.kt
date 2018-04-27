@@ -10,17 +10,16 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.zalora.twitsplit.R
 import com.zalora.twitsplit.Utils
+import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
+import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
 import com.zalora.twitsplit.main.adapter.MessageAdapter
 import com.zalora.twitsplit.main.adapter.MessageVH
-import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
-import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
 import com.zalora.twitsplit.matcher.RecyclerViewMatcher.Companion.withRecyclerView
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 class UIHomeTest {
@@ -189,6 +188,17 @@ class UIHomeTest {
         Utils.rotateToPortrait(testRule.activity)
         onView(matcherRecyclerView).perform(RecyclerViewActions.scrollToPosition<MessageVH>(0))
         onView(withRecyclerView(R.id.recyclerView).atPositionOnView(0, R.id.messageTv, MessageAdapter::class.java)).check(matches(withText("aaaa")))
+    }
+
+    @Test
+    fun testToast() {
+        onView(withId(R.id.input)).perform(typeText(""))
+        onView(withId(R.id.postBtn)).perform(click())
+        onView(withText(EXCEPTION_ERROR_INPUT_EMPTY.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+
+        onView(withId(R.id.input)).perform(typeText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
+        onView(withId(R.id.postBtn)).perform(click())
+        onView(withText(EXCEPTION_ERROR_INPUT_TOO_LONG.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
     }
 
     @Test

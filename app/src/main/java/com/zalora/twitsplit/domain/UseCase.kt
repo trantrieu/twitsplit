@@ -1,4 +1,4 @@
-package com.zalora.twitsplit.base.usecase
+package com.zalora.twitsplit.domain
 
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

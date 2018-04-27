@@ -2,7 +2,7 @@ package com.zalora.twitsplit.main
 
 import com.zalora.twitsplit.TwitSplitComponent
 import com.zalora.twitsplit.di.scope.ScreenScope
-import com.zalora.twitsplit.main.domain.MessageUseCase
+import com.zalora.twitsplit.domain.MessageUseCase
 import dagger.Binds
 import dagger.Component
 import dagger.Module

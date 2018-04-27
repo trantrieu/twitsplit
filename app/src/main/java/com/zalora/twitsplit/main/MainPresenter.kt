@@ -1,7 +1,7 @@
 package com.zalora.twitsplit.main
 
 import com.zalora.twitsplit.base.IBasePresenter
-import com.zalora.twitsplit.main.domain.MessageUseCase
+import com.zalora.twitsplit.domain.MessageUseCase
 import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
