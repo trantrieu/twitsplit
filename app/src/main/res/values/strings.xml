@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TwitSplit</string>
+    <string name="input_hint">Input text here..</string>
+    <string name="post">Post</string>
+</resources>
