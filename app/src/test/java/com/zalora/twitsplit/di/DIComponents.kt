@@ -1,5 +1,6 @@
 package com.zalora.twitsplit.di
 
+import com.zalora.twitsplit.TwitSplitComponent
 import com.zalora.twitsplit.business.BusinessTest
 import com.zalora.twitsplit.di.scope.ItemScope
 import com.zalora.twitsplit.di.scope.ScreenScope

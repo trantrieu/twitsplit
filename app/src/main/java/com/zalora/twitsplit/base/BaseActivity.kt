@@ -1,6 +1,5 @@
 package com.zalora.twitsplit.base
 
-import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.zalora.twitsplit.TwitSplitApp
 
@@ -30,10 +29,6 @@ abstract class BaseActivity<iPresenter: IPresenter> : AppCompatActivity(), IView
     override fun onDestroy() {
         super.onDestroy()
         presenter.onDestroy()
-    }
-
-    override fun getCContext(): Context {
-        return this
     }
 
 }

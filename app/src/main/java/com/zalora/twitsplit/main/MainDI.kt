@@ -1,6 +1,6 @@
 package com.zalora.twitsplit.main
 
-import com.zalora.twitsplit.di.TwitSplitComponent
+import com.zalora.twitsplit.TwitSplitComponent
 import com.zalora.twitsplit.di.scope.ScreenScope
 import com.zalora.twitsplit.main.domain.MessageUseCase
 import dagger.Binds

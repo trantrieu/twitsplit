@@ -1,6 +1,6 @@
 package com.zalora.twitsplit.main.adapter
 
-import com.zalora.twitsplit.di.TwitSplitComponent
+import com.zalora.twitsplit.TwitSplitComponent
 import com.zalora.twitsplit.di.scope.ItemScope
 import dagger.Binds
 import dagger.Component
