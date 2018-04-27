@@ -1,9 +1,6 @@
 package com.zalora.twitsplit
 
 import android.app.Application
-import com.zalora.twitsplit.di.DaggerTwitSplitComponent
-import com.zalora.twitsplit.di.TwitSplitComponent
-import com.zalora.twitsplit.di.TwitSplitModule
 
 class TwitSplitApp: Application() {
 
@@ -12,7 +9,7 @@ class TwitSplitApp: Application() {
     override fun onCreate() {
         super.onCreate()
         twitSplitComponent = DaggerTwitSplitComponent.builder()
-                .twitSplitModule(TwitSplitModule(this))
+                .twitSplitAppModule(TwitSplitAppModule(this))
                 .build()
     }
 

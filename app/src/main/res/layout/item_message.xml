@@ -11,8 +11,8 @@
         card_view:cardElevation="5dp"
         card_view:cardUseCompatPadding="true">
 
-        <TextView
-            style="@style/AppTheme.ItemTV"
+        <android.support.v7.widget.AppCompatTextView
+            style="@style/AppTheme.ItemTextView"
             android:id="@+id/messageTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

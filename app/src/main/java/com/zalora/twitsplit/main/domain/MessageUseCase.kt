@@ -11,8 +11,8 @@ import io.reactivex.schedulers.Schedulers
 class MessageUseCase: UseCase<List<String>, String>() {
 
     companion object {
-        val EXCEPTION_ERROR_INPUT_TOO_LONG = DataException("Your string is too long and doesn't contain any spaces")
-        val EXCEPTION_ERROR_INPUT_EMPTY = DataException("Your string is empty")
+        val EXCEPTION_ERROR_INPUT_TOO_LONG = DataException("Your string is too long and doesn't contain any spaces!!")
+        val EXCEPTION_ERROR_INPUT_EMPTY = DataException("Your string is empty!!")
         const val LIMIT = 50
         const val UN_KNOW = -1
     }
@@ -79,7 +79,7 @@ class MessageUseCase: UseCase<List<String>, String>() {
     }
 
     /**
-     * Init index and size for list
+     * Init index and size for each part
      */
     private fun addIndexAndSize(listOrigin: MutableList<Part>): MutableList<Part> {
         val list = mutableListOf<Part>()
@@ -90,9 +90,11 @@ class MessageUseCase: UseCase<List<String>, String>() {
         return list
     }
 
-    private fun checkPartLength(list: MutableList<Part>) {
-        //Handle on list
 
+    /**
+     * Check each part of message length
+     */
+    private fun checkPartLength(list: MutableList<Part>) {
         var index = 0
         var listStringEnd: List<String>? = null
         val size = list.size
@@ -142,7 +144,7 @@ class MessageUseCase: UseCase<List<String>, String>() {
     }
 
     /**
-     * Remove the last index, until the remain length is smaller than limit
+     * Remove the last index until the length remain is smaller than limit
      */
     private fun removePieceUtilSuccessful(part: Part): List<String> {
         val list = mutableListOf<String>()

@@ -1,16 +1,16 @@
 package com.zalora.twitsplit.business
 
 import android.content.Context
-import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
+import com.zalora.twitsplit.DaggerTwitSplitComponent
+import com.zalora.twitsplit.TwitSplitAppModule
 import com.zalora.twitsplit.di.DaggerMainComponentTest
-import com.zalora.twitsplit.di.DaggerTwitSplitComponent
-import com.zalora.twitsplit.di.TwitSplitModule
 import com.zalora.twitsplit.main.MainContract
 import com.zalora.twitsplit.main.MainModule
 import com.zalora.twitsplit.main.domain.MessageUseCase
 import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
 import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
 import com.zalora.twitsplit.main.domain.MessageUseCase.Companion.LIMIT
+import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
 import io.reactivex.functions.Consumer
 import org.junit.Assert
 import org.junit.Before
@@ -41,7 +41,7 @@ class BusinessTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         DaggerMainComponentTest.builder()
-                .twitSplitComponent(DaggerTwitSplitComponent.builder().twitSplitModule(TwitSplitModule(context)).build())
+                .twitSplitComponent(DaggerTwitSplitComponent.builder().twitSplitAppModule(TwitSplitAppModule(context)).build())
                 .mainModule(MainModule(iMainView))
                 .build()
                 .inject(this)
@@ -49,9 +49,21 @@ class BusinessTest {
 
     private fun splitTestCase(str: String, expectedResult: List<String>? = null, expectedException: Exception? = null) {
         messageUseCase.execute(str, Consumer { listPart ->
+
+            /**
+             * Check the size of expected list and result list
+             */
             Assert.assertEquals(expectedResult!!.size, listPart.size)
+
             expectedResult.forEachIndexed { i, s ->
+                /**
+                 * Check each part length is smaller than LIMIT
+                 */
                 Assert.assertTrue(listPart[i].length <= LIMIT)
+
+                /**
+                 * Check each part string is same as expected part
+                 */
                 Assert.assertEquals(s, listPart[i])
             }
         }, Consumer { exception ->

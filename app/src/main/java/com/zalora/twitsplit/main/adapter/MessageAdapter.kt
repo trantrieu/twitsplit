@@ -48,10 +48,6 @@ class MessageAdapter (context: Context): RecyclerView.Adapter<MessageVH>(), Mess
         messageVH.displayMessage(string)
     }
 
-    override fun getCContext(): Context {
-        TODO("Will not called, or throw null pointer exception")
-    }
-
 }
 
 /**

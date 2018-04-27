@@ -1,10 +1,10 @@
 package com.zalora.twitsplit.main.adapter
 
 import android.content.Context
-import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
+import com.zalora.twitsplit.DaggerTwitSplitComponent
+import com.zalora.twitsplit.TwitSplitAppModule
 import com.zalora.twitsplit.di.DaggerMessageAdapterComponentTest
-import com.zalora.twitsplit.di.DaggerTwitSplitComponent
-import com.zalora.twitsplit.di.TwitSplitModule
+import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Test
@@ -37,7 +37,7 @@ class AdapterTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         DaggerMessageAdapterComponentTest.builder()
-                .twitSplitComponent(DaggerTwitSplitComponent.builder().twitSplitModule(TwitSplitModule(context)).build())
+                .twitSplitComponent(DaggerTwitSplitComponent.builder().twitSplitAppModule(TwitSplitAppModule(context)).build())
                 .messageAdapterModule(MessageAdapterModule(iMessageView))
                 .build()
                 .inject(this)
