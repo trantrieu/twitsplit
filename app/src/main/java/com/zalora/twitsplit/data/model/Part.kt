@@ -1,6 +1,6 @@
 package com.zalora.twitsplit.data.model
 
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.UN_KNOW
+import com.zalora.twitsplit.domain.PostMessageUseCase.Companion.UN_KNOW
 
 
 data class Part(private val index: Int = UN_KNOW, private val size: Int = UN_KNOW, private val splits: List<String>) {

@@ -4,10 +4,9 @@ import android.content.Context
 import com.zalora.twitsplit.DaggerTwitSplitComponent
 import com.zalora.twitsplit.TwitSplitAppModule
 import com.zalora.twitsplit.di.DaggerMainComponentTest
-import com.zalora.twitsplit.domain.MessageUseCase
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.LIMIT
+import com.zalora.twitsplit.domain.PostMessageUseCase
+import com.zalora.twitsplit.domain.PostMessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
+import com.zalora.twitsplit.domain.PostMessageUseCase.Companion.LIMIT
 import com.zalora.twitsplit.main.MainContract
 import com.zalora.twitsplit.main.MainModule
 import com.zalora.twitsplit.rx.RxImmediateSchedulerRule
@@ -29,7 +28,7 @@ class BusinessTest {
     }
 
     @Inject
-    lateinit var messageUseCase: MessageUseCase
+    lateinit var postMessageUseCase: PostMessageUseCase
 
     @Mock
     lateinit var context: Context
@@ -48,7 +47,7 @@ class BusinessTest {
     }
 
     private fun splitTestCase(str: String, expectedResult: List<String>? = null, expectedException: Exception? = null) {
-        messageUseCase.execute(str, Consumer { listPart ->
+        postMessageUseCase.execute(str, Consumer { listPart ->
 
             /**
              * Check the size of expected list and result list
@@ -72,7 +71,7 @@ class BusinessTest {
     }
 
     @Test
-    fun splitTest() {
+    fun testAssignmentCase() {
         splitTestCase(
                 "I can't believe Tweeter now supports chunking my messages, so I don't have to do it myself.",
                 listOf(
@@ -80,27 +79,97 @@ class BusinessTest {
                         "2/2 my messages, so I don't have to do it myself."
                 )
         )
+    }
 
+    @Test
+    fun testPostEmpty() {
+        splitTestCase("", expectedException = PostMessageUseCase.EXCEPTION_ERROR_INPUT_EMPTY)
+    }
+
+    @Test
+    fun testPostTooLong() {
         splitTestCase(
                 "aaa, aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 expectedException = EXCEPTION_ERROR_INPUT_TOO_LONG
         )
 
+        /**
+         * the last piece length = 50 and contain no space
+         */
         splitTestCase(
                 "aaa, aaa aaa aaa aaa aaa aaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 expectedException = EXCEPTION_ERROR_INPUT_TOO_LONG
         )
 
+        /**
+         * input contains many pieces length = 48
+         */
+        splitTestCase(
+                "aaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                expectedException = EXCEPTION_ERROR_INPUT_TOO_LONG
+        )
+    }
+
+    @Test
+    fun testPostSingle() {
+        /**
+         * small string
+         */
+        splitTestCase(
+                "aaaa",
+                listOf("aaaa")
+        )
+
+        /**
+         * some small strings
+         */
+        splitTestCase(
+                "aaaa, bbbb   dddd  eeee",
+                listOf("aaaa, bbbb dddd eeee")
+        )
+
+        /**
+         * the last piece length = 46 and contain no space
+         */
         splitTestCase(
                 "b aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 listOf("b aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         )
 
+        /**
+         * the middle piece length = 46 and contain no space
+         */
         splitTestCase(
                 "b aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa A",
                 listOf("b aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa A")
         )
 
+        /**
+         * string length = 50
+         */
+        splitTestCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", listOf(
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ))
+    }
+
+    @Test
+    fun testSpecialCharacter() {
+        splitTestCase("!@#$%#$%$#%$#%$#%", listOf(
+                "!@#$%#$%$#%$#%$#%"
+        ))
+
+        splitTestCase("#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa11", listOf(
+                "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa11"
+        ))
+    }
+
+    @Test
+    fun testPostSplit() {
+
+        /**
+         * input contains 3 space
+         * the middle piece length = 46
+         */
         splitTestCase(
                 "bbbbb aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa A",
                 listOf(
@@ -110,6 +179,9 @@ class BusinessTest {
                 )
         )
 
+        /**
+         * contains larger space
+         */
         splitTestCase(
                 "bbbbb aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa A          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 listOf(
@@ -137,11 +209,6 @@ class BusinessTest {
                 ))
 
         splitTestCase(
-                "aaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                expectedException = EXCEPTION_ERROR_INPUT_TOO_LONG
-        )
-
-        splitTestCase(
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " +
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa       " +
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " +
@@ -164,6 +231,9 @@ class BusinessTest {
                 )
         )
 
+        /**
+         * each piece length = 22 and can combine in group of two
+         */
         splitTestCase(
                 "aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa",
                 listOf(
@@ -176,6 +246,9 @@ class BusinessTest {
                 )
         )
 
+        /**
+         * each piece length = 23 and cannot combine
+         */
         splitTestCase(
                 "aaaaaaaaaaaaaaaaaaaaaaa         aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa",
                 listOf(
@@ -194,6 +267,9 @@ class BusinessTest {
                 )
         )
 
+        /**
+         * evolve the number from x/y to ab/cd
+         */
         splitTestCase(
                 "aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa " +
                         "aaaa aaaa aaaa aaaa    aaaa aaaa aaaa aaaa aaaa " +
@@ -224,29 +300,6 @@ class BusinessTest {
                 )
         )
 
-        splitTestCase(
-                "aaaa",
-                listOf("aaaa")
-        )
-
-        splitTestCase(
-                "aaaa, bbbb   dddd  eeee",
-                listOf("aaaa, bbbb dddd eeee")
-        )
-
-        splitTestCase("", expectedException = EXCEPTION_ERROR_INPUT_EMPTY)
-
-        splitTestCase("!@#$%#$%$#%$#%$#%", listOf(
-                "!@#$%#$%$#%$#%$#%"
-        ))
-
-        splitTestCase("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", listOf(
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        ))
-
-        splitTestCase("#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa11", listOf(
-                "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa11"
-        ))
     }
 
 }

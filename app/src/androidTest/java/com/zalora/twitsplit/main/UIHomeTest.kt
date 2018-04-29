@@ -1,22 +1,25 @@
 package com.zalora.twitsplit.main
 
 import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.IdlingRegistry
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.RecyclerViewActions
-import android.support.test.espresso.matcher.RootMatchers.withDecorView
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.zalora.twitsplit.R
 import com.zalora.twitsplit.Utils
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
-import com.zalora.twitsplit.domain.MessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
+import com.zalora.twitsplit.base.toast.ToastManager
+import com.zalora.twitsplit.domain.PostMessageUseCase.Companion.EXCEPTION_ERROR_INPUT_EMPTY
+import com.zalora.twitsplit.domain.PostMessageUseCase.Companion.EXCEPTION_ERROR_INPUT_TOO_LONG
 import com.zalora.twitsplit.main.adapter.MessageAdapter
-import com.zalora.twitsplit.main.adapter.MessageVH
+import com.zalora.twitsplit.main.adapter.MessageAdapter.MessageVH
 import com.zalora.twitsplit.matcher.RecyclerViewMatcher.Companion.withRecyclerView
+import com.zalora.twitsplit.matcher.ToastFindingMatcher
 import org.hamcrest.CoreMatchers
-import org.hamcrest.CoreMatchers.not
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,12 +30,30 @@ class UIHomeTest {
     @get:Rule
     var testRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
+    @Before
+    fun setup() {
+        IdlingRegistry.getInstance().register(ToastManager.getIdlingResource())
+    }
+
+    @After
+    fun end() {
+        IdlingRegistry.getInstance().unregister(ToastManager.getIdlingResource())
+    }
+
+    /**
+     * This must be called after a toast show
+     */
+    private fun checkMessageToast(message: String) {
+        onView(withText(message)).inRoot(ToastFindingMatcher()).check(matches(isDisplayed()))
+        ToastManager.increase()
+    }
+
     @Test
     fun testPostErrorEmpty() {
         onView(withId(R.id.input)).perform(typeText(""))
         onView(withId(R.id.postBtn)).perform(click())
 
-        onView(withText(EXCEPTION_ERROR_INPUT_EMPTY.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_EMPTY.message!!)
     }
 
     @Test
@@ -40,7 +61,7 @@ class UIHomeTest {
         onView(withId(R.id.input)).perform(typeText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
         onView(withId(R.id.postBtn)).perform(click())
 
-        onView(withText(EXCEPTION_ERROR_INPUT_TOO_LONG.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_TOO_LONG.message!!)
     }
 
     @Test
@@ -194,11 +215,11 @@ class UIHomeTest {
     fun testToast() {
         onView(withId(R.id.input)).perform(typeText(""))
         onView(withId(R.id.postBtn)).perform(click())
-        onView(withText(EXCEPTION_ERROR_INPUT_EMPTY.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_EMPTY.message!!)
 
         onView(withId(R.id.input)).perform(typeText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
         onView(withId(R.id.postBtn)).perform(click())
-        onView(withText(EXCEPTION_ERROR_INPUT_TOO_LONG.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_TOO_LONG.message!!)
     }
 
     @Test
@@ -208,11 +229,11 @@ class UIHomeTest {
 
         onView(withId(R.id.input)).perform(typeText(""))
         onView(withId(R.id.postBtn)).perform(click())
-        onView(withText(EXCEPTION_ERROR_INPUT_EMPTY.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_EMPTY.message!!)
 
         onView(withId(R.id.input)).perform(typeText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
         onView(withId(R.id.postBtn)).perform(click())
-        onView(withText(EXCEPTION_ERROR_INPUT_TOO_LONG.message)).inRoot(withDecorView(not(testRule.activity.window.decorView))).check(matches(isDisplayed()))
+        checkMessageToast(EXCEPTION_ERROR_INPUT_TOO_LONG.message!!)
 
         var position = 0
         /**

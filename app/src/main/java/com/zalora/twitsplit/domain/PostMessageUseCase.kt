@@ -7,7 +7,7 @@ import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.schedulers.Schedulers
 
-class MessageUseCase: UseCase<List<String>, String>() {
+class PostMessageUseCase: UseCase<List<String>, String>() {
 
     companion object {
         val EXCEPTION_ERROR_INPUT_TOO_LONG = DataException("Your string is too long and doesn't contain any spaces!!")
