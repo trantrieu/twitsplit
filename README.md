@@ -24,3 +24,4 @@ Instead of rejecting these messages, we would like to add a new feature that wil
 ## Testing
 * Local unit test: JUnit, Mockito
 * Instrument test: Espresso
+* Monkey test
